@@ -1,0 +1,41 @@
+{
+  "name": "tiktok",
+  "version": "0.0.1",
+  "homepage": "https://www.tiktok.com/",
+  "config": {
+    "title": "TikTok",
+    "icon": "https://play-lh.googleusercontent.com/LdBITldj-tJxqLm-CsWSbnt4BMo2gk53cgM7mWIL-zn44m1ywLyQgxRsHKqp8r0qceXs=w480-h960-rw"
+  },
+  "keywords": [
+    "news"
+  ],
+  "author": {
+    "name": "Azot",
+    "url": "https://azot.so/"
+  },
+  "contributors": [
+    {
+      "name": "Vitaly Gashkov",
+      "email": "vitalygashkov@vk.com",
+      "url": "https://github.com/vitalygashkov"
+    }
+  ],
+  "license": "MIT",
+  "main": "dist/tiktok.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "azt dev",
+    "build": "azt build",
+    "test": "node --test --watch"
+  },
+  "engines": {
+    "azot": ">=4.3.10"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "azot": "^0.9.0",
+    "typescript": "^5.9.2"
+  }
+}
