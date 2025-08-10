@@ -15,22 +15,37 @@ module.exports = defineExtension({
 
     const html = await response.text();
 
-    const urlMatcher = /"downloadAddr":"([^"]+)"/;
-    const downloadAddrMatch = html.match(urlMatcher);
+    const jsonString = html
+      .split('<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">')[1]
+      ?.split('</script>')[0];
 
-    if (!downloadAddrMatch || !downloadAddrMatch[1]) {
-      console.error('Could not find the video download address (downloadAddr) in the page source.');
+    if (!jsonString) {
+      console.error('Could not find target script tag. TikTok might have updated their page structure.');
       return [];
     }
 
-    const videoUrl = downloadAddrMatch[1].replace(/\\u002F/g, '/');
+    const data = JSON.parse(jsonString);
 
-    const titleMatcher = /"desc":"([^"]*)"/;
-    const titleMatch = html.match(titleMatcher);
+    const videoDetail = data['__DEFAULT_SCOPE__']?.['webapp.video-detail'];
+    const videoData = videoDetail?.itemInfo?.itemStruct;
 
-    let title = 'TikTok Video';
-    if (titleMatch && titleMatch[1]) {
-      title = titleMatch[1];
+    if (!videoData) {
+      console.error(
+        'Could not find video data in the JSON payload. The content might be unavailable or the structure has changed.'
+      );
+      if (videoDetail?.statusMsg) {
+        console.error(`Error ${videoDetail.statusCode}: ${videoDetail.statusMsg}`);
+      }
+      return [];
+    }
+
+    const title = videoData.desc || 'TikTok Video';
+    // The direct video URL without a watermark.
+    const videoUrl = videoData.video?.playAddr;
+
+    if (!videoUrl) {
+      console.error('Could not find a video URL (playAddr) in the JSON payload.');
+      return [];
     }
 
     return [
@@ -39,8 +54,8 @@ module.exports = defineExtension({
         source: {
           url: videoUrl,
           headers: {
-            Referer: 'https://www.tiktok.com/',
-            Cookie: document.cookie,
+            referer: 'https://www.tiktok.com/',
+            cookie: document.cookie,
           },
         },
       },
