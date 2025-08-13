@@ -1,8 +1,6 @@
-'use strict';
+import { defineExtension } from 'azot';
 
-const { defineExtension } = require('azot');
-
-module.exports = defineExtension({
+export default defineExtension({
   canHandle: (url) => new URL(url).hostname.includes('tiktok.com'),
 
   fetchContentMetadata: async (url) => {
